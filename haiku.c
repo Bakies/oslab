@@ -7,7 +7,7 @@
 int main() { 
 	struct sockaddr_in serv_addr;
 	// TODO make this a haiku
-	char haiku[] = "This is a test";
+	char haiku[] = "Autumn moonlight—\na worm digs silently\ninto the chestnut.\n - Matsuo Basho";
 	char sendBuff[1024];
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 	int connfd = 0;
@@ -17,7 +17,7 @@ int main() {
 
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_addr.sin_port = htons(5000);
+	serv_addr.sin_port = htons(5575);
 	
 	bind(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 	listen(sock, 10);
@@ -26,7 +26,6 @@ int main() {
 		connfd = accept(sock, (struct sockaddr*)NULL, NULL);
 		snprintf(sendBuff, sizeof(sendBuff), "%s\r\n", haiku);
 		write(connfd, sendBuff, strlen(sendBuff));
-
 		close(connfd);
 	}
 	return 0;
