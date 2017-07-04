@@ -4,11 +4,9 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#define BUFFER_SIZE 25
-#define READ_END1 0
-#define WRITE_END1 1
-#define READ_END2 2
-#define WRITE_END2 3
+#define BUFFER_SIZE 128
+#define READ_END 0
+#define WRITE_END 1
 
 void switchCase(char *buffer) {
     for (int i = 0; i < strlen(buffer); i++) {
@@ -38,22 +36,24 @@ int main(void) {
         return 1;
     }
     if (pid > 0) { /* parent process */
-        /* close the unused end of the pipe */
-        close(fd[READ_END1]);
         /* write to the pipe */
-        write(fd[WRITE_END1], write_msg, strlen(write_msg)+1);
-        switchCase(write_msg);
-        printf("write %s",write_msg);
+        write(fd[WRITE_END], write_msg, strlen(write_msg)+1);
+        printf("P wrote %s\n",write_msg);
         /* close the write end of the pipe */
-        close(fd[WRITE_END1]);
-        }
+        close(fd[WRITE_END]);
+	read(fd[READ_END], write_msg, strlen(read_msg) + 1);
+	printf("P read %s\n", write_msg);
+    }
     else { /* child process */
-        /* close the unused end of the pipe */
-        close(fd[WRITE_END1]);
         /* read from the pipe */
-        read(fd[READ_END1], read_msg, BUFFER_SIZE); printf("read %s",read_msg);
+        read(fd[READ_END], read_msg, BUFFER_SIZE); 
+	printf("C read %s\n",read_msg);
         /* close the write end of the pipe */
-        close(fd[READ_END1]);
-        }
+        close(fd[READ_END]);
+	switchCase(read_msg);
+	write(fd[WRITE_END], read_msg, strlen(read_msg) + 1);
+	printf("C wrote %s\n", read_msg);
+        close(fd[WRITE_END]);
+    }
     return 0;
 }
